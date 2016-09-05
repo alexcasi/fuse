@@ -1,0 +1,7 @@
+config("fuse_config") {
+  include_dirs = [ "include" ]
+}
+
+group("fuse") {
+  public_configs = [ ":fuse_config" ]
+}
