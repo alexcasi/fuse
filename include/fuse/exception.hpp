@@ -16,6 +16,7 @@
 #endif
 
 #include <stdexcept>
+#include <string>
 
 FUSE_NS_BEGIN
 
