@@ -29,21 +29,7 @@ public:
   }
 
   std::size_t size() const { return size_; }
-  void add(std::size_t size) { size_ += size; }
-
-  template <class T>
-  auto operator()(const T& val) const ->
-      typename std::enable_if<!std::is_empty<T>::value>::type
-  {
-    serialized_size(*const_cast<serialized_sizer*>(this), val);
-  }
-
-  template <class T>
-  auto operator()(const T& val) const ->
-      typename std::enable_if<std::is_empty<T>::value>::type
-  {
-    // do nothing
-  }
+  void commit(std::size_t size) { size_ += size; }
 
 protected:
   std::size_t size_;

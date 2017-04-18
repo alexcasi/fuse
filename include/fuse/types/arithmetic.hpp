@@ -27,7 +27,7 @@ template <class Reader, class T>
 auto read(Reader& r, T& val) ->
     typename std::enable_if<std::is_arithmetic<T>::value>::type
 {
-  detail::check_size(r, sizeof(T),
+  detail::check_size(r.size(), sizeof(T),
                      "not enough data for arithmetic");
 
   // TODO(tim): endianness
@@ -40,18 +40,18 @@ template <class Writer, class T>
 auto write(Writer& w, T const& val) ->
     typename std::enable_if<std::is_arithmetic<T>::value>::type
 {
-  detail::check_size(w, sizeof(T),
+  detail::check_size(w.capacity(), sizeof(T),
                      "not enough data for arithmetic");
 
-  *static_cast<T*>(w.data()) = val;
-  w.consume(sizeof(T));
+  *static_cast<T*>(w.peek()) = val;
+  w.commit(sizeof(T));
 }
 
 template <class SerializedSizer, class T>
 auto serialized_size(SerializedSizer& s, T const& val) ->
     typename std::enable_if<std::is_arithmetic<T>::value>::type
 {
-  s.add(sizeof(T));
+  s.commit(sizeof(T));
 }
 
 // enum values
@@ -61,7 +61,7 @@ auto read(Reader& r, T& val) ->
     typename std::enable_if<std::is_enum<T>::value>::type
 {
   typename std::underlying_type<T>::type v;
-  r(v);
+  read(r, v);
   val = static_cast<T>(v);
 }
 
@@ -70,14 +70,14 @@ auto write(Writer& w, T const& val) ->
     typename std::enable_if<std::is_enum<T>::value>::type
 {
   using utype = typename std::underlying_type<T>::type;
-  w(static_cast<utype>(val));
+  write(w, static_cast<utype>(val));
 }
 
 template <class SerializedSizer, class T>
 auto serialized_size(SerializedSizer& s, T const& val) ->
     typename std::enable_if<std::is_enum<T>::value>::type
 {
-  s.add(sizeof(typename std::underlying_type<T>::type));
+  s.commit(sizeof(typename std::underlying_type<T>::type));
 }
 
 FUSE_NS_END

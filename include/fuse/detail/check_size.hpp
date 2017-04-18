@@ -23,11 +23,10 @@ FUSE_NS_BEGIN
 
 namespace detail {
 
-template <class BufferProvider>
-void check_size(const BufferProvider& prov, std::size_t required_size,
-                const char* what)
+inline void check_size(std::size_t size, std::size_t required_size,
+                       const char* what)
 {
-  if (prov.size() < required_size)
+  if (size < required_size)
     detail::throw_exception(buffer_too_small(what));
 }
 

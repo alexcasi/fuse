@@ -22,39 +22,32 @@ FUSE_NS_BEGIN
 class writer
 {
 public:
-  explicit writer(void* data, std::size_t size)
-    : data_(data)
-    , size_(size)
+  explicit writer(void* data, std::size_t capacity)
+    : data_(static_cast<char*>(data))
+    , size_(0)
+    , capacity_(capacity)
   {
     // ctor
   }
 
+  const void* data() const { return data_; }
   std::size_t size() const { return size_; }
-  void* data() const { return data_; }
+  std::size_t capacity() const { return capacity_; }
 
-  void consume(std::size_t size)
+  void* peek()
   {
-    size_ -= size;
-    data_ = static_cast<char*>(data_) + size;
+    return data_ + size_;
   }
 
-  template <class T>
-  auto operator()(const T& val) const ->
-      typename std::enable_if<!std::is_empty<T>::value>::type
+  void commit(std::size_t size)
   {
-    write(*const_cast<writer*>(this), val);
-  }
-
-  template <class T>
-  auto operator()(const T& val) const ->
-      typename std::enable_if<std::is_empty<T>::value>::type
-  {
-    // do nothing
+    size_ += size;
   }
 
 protected:
-  void* data_;
+  char* data_;
   std::size_t size_;
+  std::size_t capacity_;
 };
 
 FUSE_NS_END

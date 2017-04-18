@@ -1,6 +1,3 @@
-/// @file
-///
-///
 /// @copyright Copyright (c) 2016 Tim Niederhausen (tim@rnc-ag.de)
 /// Distributed under the Boost Software License, Version 1.0.
 /// (See accompanying file LICENSE_1_0.txt or copy at
@@ -19,6 +16,7 @@
 #include "fuse/detail/throw_exception.hpp"
 
 #include "fuse/exception.hpp"
+#include "fuse/operations.hpp"
 
 #include <boost/container/string.hpp>
 
@@ -33,9 +31,9 @@ void read(
     boost::container::basic_string<T, Traits, Allocator>& val)
 {
   length_type size = 0;
-  r(size);
+  read(r, size);
 
-  detail::check_size(r, size * sizeof(T),
+  detail::check_size(r.size(), size * sizeof(T),
                      "not enough data for string");
 
   val.assign(static_cast<const T*>(r.data()), size);
@@ -51,13 +49,13 @@ void write(
     detail::throw_exception(invalid_data("string is too long"));
 
   length_type size = static_cast<length_type>(val.size());
-  w(size);
+  write(w, size);
 
-  detail::check_size(w, size * sizeof(T),
+  detail::check_size(w.capacity(), size * sizeof(T),
                      "not enough data for string");
 
-  std::memcpy(w.data(), val.data(), size * sizeof(T));
-  w.consume(size * sizeof(T));
+  std::memcpy(w.peek(), val.data(), size * sizeof(T));
+  w.commit(size * sizeof(T));
 }
 
 template <class SerializedSizer, class T, class Traits, class Allocator>
@@ -69,8 +67,8 @@ void serialized_size(
     detail::throw_exception(invalid_data("string is too long"));
 
   length_type size = static_cast<length_type>(val.size());
-  s(size);
-  s.add(size * sizeof(T));
+  serialized_size(s, size);
+  s.commit(size * sizeof(T));
 }
 
 FUSE_NS_END

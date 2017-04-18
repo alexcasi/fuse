@@ -1,6 +1,3 @@
-/// @file
-///
-///
 /// @copyright Copyright (c) 2016 Tim Niederhausen (tim@rnc-ag.de)
 /// Distributed under the Boost Software License, Version 1.0.
 /// (See accompanying file LICENSE_1_0.txt or copy at
@@ -24,28 +21,24 @@ FUSE_NS_BEGIN
 template <class Reader, class T, T v>
 void read(Reader& r, std::integral_constant<T, v>)
 {
-  typedef std::integral_constant<T, v> type;
+  T val;
+  read(r, val);
 
-  typename type::value_type val;
-  r(val);
-
-  if (val != type::value)
+  if (val != v)
     detail::throw_exception(invalid_data("integral constant mismatch"));
 }
 
 template <class Writer, class T, T v>
 void write(Writer& w, std::integral_constant<T, v>)
 {
-  typedef std::integral_constant<T, v> type;
-  w(type::value);
+  write(w, v);
 }
 
 template <class SerializedSizer, class T, T v>
 void serialized_size(SerializedSizer& s,
                      std::integral_constant<T, v>)
 {
-  typedef std::integral_constant<T, v> type;
-  w(type::value);
+  serialized_size(s, v);
 }
 
 FUSE_NS_END

@@ -15,6 +15,8 @@
 #pragma once
 #endif
 
+#include "fuse/operations.hpp"
+
 #include <type_traits>
 
 FUSE_NS_BEGIN
@@ -23,21 +25,21 @@ template <class Reader, class T, std::size_t N>
 void read(Reader& r, T (&val) [N])
 {
   for (std::size_t i = 0; i != N; ++i)
-    r(val[i]);
+    FUSE_READ(r, val[i]);
 }
 
 template <class Writer, class T, std::size_t N>
 void write(Writer& w, const T (&val) [N])
 {
   for (std::size_t i = 0; i != N; ++i)
-    w(val[i]);
+    FUSE_WRITE(w, val[i]);
 }
 
 template <class SerializedSizer, class T, std::size_t N>
 void serialized_size(SerializedSizer& s, const T (&val) [N])
 {
   for (std::size_t i = 0; i != N; ++i)
-    s(val[i]);
+    FUSE_SIZE(s, val[i]);
 }
 
 FUSE_NS_END

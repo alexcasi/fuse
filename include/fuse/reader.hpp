@@ -38,20 +38,6 @@ public:
     data_ = static_cast<const char*>(data_) + size;
   }
 
-  template <class T>
-  auto operator()(T& val) const ->
-      typename std::enable_if<!std::is_empty<T>::value>::type
-  {
-    read(*const_cast<reader*>(this), val);
-  }
-
-  template <class T>
-  auto operator()(T& val) const ->
-      typename std::enable_if<std::is_empty<T>::value>::type
-  {
-    // do nothing
-  }
-
 protected:
   const void* data_;
   std::size_t size_;
